@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Загрузка фото</title>
+    <link rel="stylesheet" type="text/css" href="/internal/controller/static/templates/css/main.css">
+</head>
+<body>
+    <form action="/iconRecognition/doRecognition" method="post" enctype="multipart/form-data">
+        <h1>Загрузка фото</h1>
+        <label for="file-input">Выберите файл</label>
+        <input type="file" name='file' id="file-input">
+        <div id="filename"></div>
+        <input type="submit" class ="default-button" value="Отправить">
+    </form>
+    <script>
+        const fileInput = document.getElementById('file-input');
+        const filename = document.getElementById('filename');
+
+        fileInput.addEventListener('change', function() {
+            filename.textContent = this.files[0].name;
+        });
+    </script>
+</body>
+</html>

@@ -10,6 +10,7 @@ logger:
   rollbar_env: 'go-clean-template'
 
 postgres:
+  pg_url: postgresql://user:pass@localhost:5432/postgres
   pool_max: 2
 
 rabbitmq:
