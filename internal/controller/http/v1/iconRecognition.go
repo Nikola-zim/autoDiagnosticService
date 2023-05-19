@@ -43,6 +43,10 @@ func (r *iconRecognitionRoutesRoutes) doRecognition(c *gin.Context) {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("Ошибка сохранения файла: %s", err.Error()))
 		return
 	}
+	//TODO обращение к usecase
+
+	//TODO вернуть распознанное
+
 }
 
 func (r *iconRecognitionRoutesRoutes) uploadDashboard(c *gin.Context) {

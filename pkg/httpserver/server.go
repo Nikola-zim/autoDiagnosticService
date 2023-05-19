@@ -21,8 +21,12 @@ type Server struct {
 	shutdownTimeout time.Duration
 }
 
+type telegram interface {
+	Start()
+}
+
 // New -.
-func New(handler http.Handler, opts ...Option) *Server {
+func New(handler http.Handler, t telegram, opts ...Option) *Server {
 	httpServer := &http.Server{
 		Handler:      handler,
 		ReadTimeout:  _defaultReadTimeout,
@@ -40,8 +44,10 @@ func New(handler http.Handler, opts ...Option) *Server {
 	for _, opt := range opts {
 		opt(s)
 	}
-
+	// Запуск сервера
 	s.start()
+	// Запуск телеграм-бота
+	t.Start()
 
 	return s
 }

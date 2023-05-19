@@ -17,6 +17,8 @@ import (
 	"github.com/evrone/go-clean-template/pkg/httpserver"
 	"github.com/evrone/go-clean-template/pkg/logger"
 	"github.com/evrone/go-clean-template/pkg/postgres"
+
+	"github.com/evrone/go-clean-template/internal/controller/telegram"
 )
 
 // Run creates objects via constructors.
@@ -36,10 +38,15 @@ func Run(cfg *config.Config) {
 		webapi.New(),
 	)
 
+	//telegram bot
+	telegramBot, err := telegram.New(cfg.TG.BotToken)
+	if err != nil {
+		l.Warn(fmt.Sprintf("app - Run - telegram.New: %w", err))
+	}
 	// HTTP Server
 	handler := gin.New()
 	v1.NewRouter(handler, l, translationUseCase)
-	httpServer := httpserver.New(handler, httpserver.Port(cfg.HTTP.Port))
+	httpServer := httpserver.New(handler, telegramBot, httpserver.Port(cfg.HTTP.Port))
 
 	// Waiting signal
 	interrupt := make(chan os.Signal, 1)
