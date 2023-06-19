@@ -3,27 +3,28 @@ package usecase
 
 import (
 	"context"
-
 	"github.com/evrone/go-clean-template/internal/entity"
 )
 
 //go:generate mockgen -source=interfaces.go -destination=./mocks_test.go -package=usecase_test
 
 type (
-	// Translation -.
-	Translation interface {
-		Translate(context.Context, entity.Translation) (entity.Translation, error)
-		History(context.Context) ([]entity.Translation, error)
+	// ImageRecognition -.
+	ImageRecognition interface {
+		AddRequest(context.Context, entity.Request) error
+		GetRecognitionTasks(context.Context) ([]entity.Request, error)
+		MakeRecognized(context.Context, entity.Request) error
+		GetRecognitionAnswers(ctx context.Context) ([]entity.Request, error)
 	}
 
-	// TranslationRepo -.
-	TranslationRepo interface {
-		Store(context.Context, entity.Translation) error
-		GetHistory(context.Context) ([]entity.Translation, error)
+	// ImagesRepo -.
+	ImagesRepo interface {
+		AddRequest(context.Context, entity.Request) error
+		GetRecognitionTasks(context.Context) ([]entity.Request, error)
+		MakeRecognized(context.Context, entity.Request) error
+		GetRecognitionAnswers(context.Context) ([]entity.Request, error)
 	}
 
-	// TranslationWebAPI -.
-	TranslationWebAPI interface {
-		Translate(entity.Translation) (entity.Translation, error)
+	DetectionWorker interface {
 	}
 )

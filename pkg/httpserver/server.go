@@ -46,7 +46,7 @@ func New(handler http.Handler, t telegram, opts ...Option) *Server {
 	}
 	// Запуск сервера
 	s.start()
-	// Запуск телеграм-бота
+	// Запуск телеграм-бота go
 	t.Start()
 
 	return s

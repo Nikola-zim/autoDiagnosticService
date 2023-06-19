@@ -10,11 +10,11 @@ import (
 )
 
 type iconRecognitionRoutesRoutes struct {
-	t usecase.Translation
+	t usecase.ImageRecognition
 	l logger.Interface
 }
 
-func newIconRecognitionRoutes(handler *gin.RouterGroup, t usecase.Translation, l logger.Interface) {
+func newIconRecognitionRoutes(handler *gin.RouterGroup, t usecase.ImageRecognition, l logger.Interface) {
 	r := &iconRecognitionRoutesRoutes{t, l}
 
 	h := handler.Group("")
@@ -37,7 +37,7 @@ func (r *iconRecognitionRoutesRoutes) doRecognition(c *gin.Context) {
 	}
 
 	// сохраняем файл на сервере
-	err = c.SaveUploadedFile(file, "./pkg/file_storage/test/"+file.Filename)
+	err = c.SaveUploadedFile(file, "./pkg/file_storage/images/"+file.Filename)
 
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("Ошибка сохранения файла: %s", err.Error()))

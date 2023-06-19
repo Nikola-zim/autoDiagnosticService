@@ -36,7 +36,7 @@ services:
 #  integration:
 #    build:
 #      context: .
-#      dockerfile: integration-test/Dockerfile
+#      dockerfile: integration-images/Dockerfile
 #    container_name: integration
 #    image: integration
 #    depends_on:

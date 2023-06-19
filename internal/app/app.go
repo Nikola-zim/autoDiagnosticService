@@ -2,7 +2,12 @@
 package app
 
 import (
+	"context"
 	"fmt"
+	"github.com/evrone/go-clean-template/internal/entity"
+	"github.com/evrone/go-clean-template/internal/usecase/repo"
+	"github.com/evrone/go-clean-template/internal/usecase/worker"
+	"github.com/evrone/go-clean-template/pkg/postgres"
 	"os"
 	"os/signal"
 	"syscall"
@@ -12,11 +17,9 @@ import (
 	"github.com/evrone/go-clean-template/config"
 	v1 "github.com/evrone/go-clean-template/internal/controller/http/v1"
 	"github.com/evrone/go-clean-template/internal/usecase"
-	"github.com/evrone/go-clean-template/internal/usecase/repo"
-	"github.com/evrone/go-clean-template/internal/usecase/webapi"
 	"github.com/evrone/go-clean-template/pkg/httpserver"
 	"github.com/evrone/go-clean-template/pkg/logger"
-	"github.com/evrone/go-clean-template/pkg/postgres"
+	_ "github.com/evrone/go-clean-template/pkg/postgres"
 
 	"github.com/evrone/go-clean-template/internal/controller/telegram"
 )
@@ -32,20 +35,31 @@ func Run(cfg *config.Config) {
 	}
 	defer pg.Close()
 
+	newAnswer := make(chan bool)
 	// Use case
-	translationUseCase := usecase.New(
-		repo.New(pg),
-		webapi.New(),
+	detectionUseCase := usecase.New(
+		repo.NewImagesRepo(pg),
 	)
 
+	// Detection Worker
+	detectionWorker := worker.NewDetectionWebAPI(detectionUseCase, newAnswer)
+	go func() {
+		err = detectionWorker.Run(context.Background())
+		if err != nil {
+			l.Fatal(err)
+		}
+	}()
+	//
+	classes := entity.NewClasses()
 	//telegram bot
-	telegramBot, err := telegram.New(cfg.TG.BotToken)
+	telegramBot, err := telegram.New(cfg.TG.BotToken, detectionUseCase, classes, newAnswer)
 	if err != nil {
 		l.Warn(fmt.Sprintf("app - Run - telegram.New: %w", err))
 	}
+
 	// HTTP Server
 	handler := gin.New()
-	v1.NewRouter(handler, l, translationUseCase)
+	v1.NewRouter(handler, l, detectionUseCase)
 	httpServer := httpserver.New(handler, telegramBot, httpserver.Port(cfg.HTTP.Port))
 
 	// Waiting signal
