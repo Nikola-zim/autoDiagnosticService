@@ -9,7 +9,7 @@ import (
 )
 
 // NewRouter -.
-func NewRouter(handler *gin.Engine, l logger.Interface, t usecase.ImageRecognition) {
+func NewRouter(handler *gin.Engine, l logger.Interface, t usecase.Recognition) {
 	// Options
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
@@ -22,7 +22,7 @@ func NewRouter(handler *gin.Engine, l logger.Interface, t usecase.ImageRecogniti
 	handler.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	// Routers
-	iconRecognition := handler.Group("/iconRecognition")
+	iconRecognition := handler.Group("/v1")
 	{
 		newIconRecognitionRoutes(iconRecognition, t, l)
 	}

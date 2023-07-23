@@ -9,23 +9,23 @@ import (
 	"strings"
 )
 
-// ImagesRepo -.
-type ImagesRepo struct {
+// RecognitionRepo -.
+type RecognitionRepo struct {
 	postgres  *postgres.Postgres
 	batchSize int16
 }
 
 const defaultBatchSize = 32
 
-// NewImagesRepo -.
-func NewImagesRepo(pg *postgres.Postgres) *ImagesRepo {
-	return &ImagesRepo{
+// NewRecognitionRepo -.
+func NewRecognitionRepo(pg *postgres.Postgres) *RecognitionRepo {
+	return &RecognitionRepo{
 		postgres:  pg,
 		batchSize: defaultBatchSize,
 	}
 }
 
-func (ir *ImagesRepo) AddRequest(ctx context.Context, request entity.Request) error {
+func (ir *RecognitionRepo) AddRequest(ctx context.Context, request entity.Request) error {
 	// Start transaction
 	tx, err := ir.postgres.Pool.Begin(ctx)
 	if err != nil {
@@ -48,7 +48,7 @@ func (ir *ImagesRepo) AddRequest(ctx context.Context, request entity.Request) er
 	return nil
 }
 
-func (ir *ImagesRepo) GetRecognitionTasks(ctx context.Context) ([]entity.Request, error) {
+func (ir *RecognitionRepo) GetRecognitionTasks(ctx context.Context) ([]entity.Request, error) {
 	// Start transaction
 	tx, err := ir.postgres.Pool.Begin(ctx)
 	if err != nil {
@@ -77,7 +77,7 @@ func (ir *ImagesRepo) GetRecognitionTasks(ctx context.Context) ([]entity.Request
 	return tasks, nil
 }
 
-func (ir *ImagesRepo) MakeRecognized(ctx context.Context, req entity.Request) error {
+func (ir *RecognitionRepo) MakeRecognized(ctx context.Context, req entity.Request) error {
 	// Start transaction
 	tx, err := ir.postgres.Pool.Begin(ctx)
 	if err != nil {
@@ -100,7 +100,7 @@ func (ir *ImagesRepo) MakeRecognized(ctx context.Context, req entity.Request) er
 	return nil
 }
 
-func (ir *ImagesRepo) GetRecognitionAnswers(ctx context.Context) ([]entity.Request, error) {
+func (ir *RecognitionRepo) GetRecognitionAnswers(ctx context.Context) ([]entity.Request, error) {
 	// Start transaction
 	tx, err := ir.postgres.Pool.Begin(ctx)
 	if err != nil {

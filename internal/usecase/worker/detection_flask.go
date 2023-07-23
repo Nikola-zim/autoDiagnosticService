@@ -21,7 +21,7 @@ import (
 // DetectionWebAPI -.
 type DetectionWebAPI struct {
 	scheduler *gocron.Scheduler
-	useCase   usecase.ImageRecognition
+	useCase   usecase.Recognition
 	newAnswer chan bool
 }
 
@@ -32,7 +32,7 @@ const (
 )
 
 // NewDetectionWebAPI -.
-func NewDetectionWebAPI(useCase usecase.ImageRecognition, newAnswer chan bool) *DetectionWebAPI {
+func NewDetectionWebAPI(useCase usecase.Recognition, newAnswer chan bool) *DetectionWebAPI {
 	location, _ := time.LoadLocation(defaultLocation)
 	return &DetectionWebAPI{
 		useCase:   useCase,
@@ -93,7 +93,7 @@ func (dw *DetectionWebAPI) serverRecognitionQuery(ctx context.Context, tasks []e
 		writer.Close()
 
 		// Создаем запрос POST
-		req, err := http.NewRequest("POST", "http://192.168.1.2:5000/v1/object-detection/yolov5", &buf)
+		req, err := http.NewRequest("POST", "http://192.168.1.4:5000/v1/object-detection/yolov5", &buf)
 		if err != nil {
 			return err
 		}

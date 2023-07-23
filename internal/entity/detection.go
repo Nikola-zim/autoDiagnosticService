@@ -17,3 +17,8 @@ type DetectionResult struct {
 type Description struct {
 	Name string `json:"name"`
 }
+
+type User struct {
+	Login    string
+	Password string
+}

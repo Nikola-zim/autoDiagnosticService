@@ -22,7 +22,7 @@ import (
 type Telegram struct {
 	BotAPI    *tgbotapi.BotAPI
 	botToken  string
-	useCase   usecase.ImageRecognition
+	useCase   usecase.Recognition
 	newAnswer chan bool
 	classes   *entity.Classes
 }
@@ -30,7 +30,7 @@ type Telegram struct {
 const layout = "2006_01_02"
 const filePath = "pkg/file_storage/images/"
 
-func New(token string, useCase usecase.ImageRecognition, classes *entity.Classes, newAnswer chan bool, opts ...Option) (*Telegram, error) {
+func New(token string, useCase usecase.Recognition, classes *entity.Classes, newAnswer chan bool, opts ...Option) (*Telegram, error) {
 
 	botAPI, err := tgbotapi.NewBotAPI(token)
 

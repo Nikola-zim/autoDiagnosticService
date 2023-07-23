@@ -36,9 +36,11 @@ func Run(cfg *config.Config) {
 	defer pg.Close()
 
 	newAnswer := make(chan bool)
+
 	// Use case
 	detectionUseCase := usecase.New(
-		repo.NewImagesRepo(pg),
+		repo.NewRecognitionRepo(pg),
+		repo.NewAuth(pg),
 	)
 
 	// Detection Worker

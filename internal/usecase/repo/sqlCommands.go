@@ -11,11 +11,11 @@ const (
 
 const (
 	newTask = `
-		INSERT INTO requests (chatID, image_path_name, status_code)
+		INSERT INTO requests (chat_id, image_path_name, status_code)
 		VALUES ($1, $2, $3);`
 
 	getTasks = `
-		SELECT id, chatid, image_path_name FROM requests
+		SELECT id, chat_id, image_path_name FROM requests
 		WHERE status_code = $1
 		LIMIT $2;`
 
@@ -27,7 +27,7 @@ const (
 		WHERE id = $4;`
 
 	getAnswers = `
-		SELECT id, chatid, detected_path_name, description
+		SELECT id, chat_id, detected_path_name, description
 		FROM requests
 		WHERE status_code = 3;`
 
@@ -35,4 +35,12 @@ const (
 		UPDATE requests
 		SET status_code = 4
 		WHERE id in (%s);`
+
+	addUser = `
+		INSERT INTO users (login, password)
+		VALUES ($1, $2)
+		RETURNING user_id;`
+	login = `
+		SELECT user_id FROM users
+		WHERE login = $1 AND password = $2;`
 )
