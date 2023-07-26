@@ -36,3 +36,7 @@ func (ir *RecognitionUseCase) GetRecognitionAnswers(ctx context.Context) ([]enti
 func (ir *RecognitionUseCase) AddUser(c context.Context, u entity.User) error {
 	return ir.Auth.AddUser(c, u)
 }
+
+func (ir *RecognitionUseCase) Login(c context.Context, u entity.User) (bool, error) {
+	return ir.Auth.Login(c, u)
+}

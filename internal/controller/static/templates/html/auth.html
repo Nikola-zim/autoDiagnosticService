@@ -2,76 +2,39 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-  <title>User Registration & Login Form</title>
-  <style>
-    body {
-      background-color: #f2f2f2;
-      font-family: Arial, sans-serif;
-    }
-    .container {
-      width: 300px;
-      padding: 16px;
-      background-color: white;
-      margin: 0 auto;
-      margin-top: 100px;
-      border: 1px solid black;
-      border-radius: 4px;
-    }
-    input[type=text], input[type=password] {
-      width: 100%;
-      padding: 12px 20px;
-      margin: 8px 0;
-      display: inline-block;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-sizing: border-box;
-    }
-    button {
-      width: 100%;
-      background-color: #4CAF50;
-      color: white;
-      padding: 14px 20px;
-      margin: 8px 0;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-    .register {
-      border-top: 1px solid #ccc;
-      padding-top: 16px;
-    }
-  </style>
+  <title>{{.block_title}}</title>
+  <link rel="stylesheet" type="text/css" href="/internal/controller/static/templates/css/auth.css">
 </head>
 <body>
 <div class="container">
-  <form id="myForm" method="post">
-    <label><b>Username</b></label>
-    <input type="text" placeholder="Enter Username" name="uname" required>
+  <div class="container_sub">
+    <form id="Login" action="/v1/user/login " method="post">
+      <label><b>Login</b></label>
 
-    <label><b>Password</b></label>
-    <input type="password" placeholder="Enter Password" name="psw" required>
+      <input type="text" placeholder="Enter Username" name="uname" required>
 
-    <button type="submit" onclick="login('');">Login</button>
+      <input type="password" placeholder="Enter Password" name="psw" required>
 
-    <div class="register">
+      <button type="submit" onclick="login('/v1/user/login');">Login</button>
+
+    </form>
+  </div>
+  <div class="container_sub">
+    <form id="Registration" action="/v1/user/register " method="post">
+      <label><b>Registration</b></label>
+
+      <input type="text" placeholder="Enter Username" name="uname" required>
+
+      <input type="password" placeholder="Enter Password" name="psw" required>
+
       <button type="submit" onclick="registration('/v1/user/register');">Register</button>
-    </div>
-  </form>
+    </form>
+  </div>
+  <div>
+    <label><b>Status:</b></label>
+    {{.status}}
+  </div>
 </div>
 </body>
 </html>
 
-
-<script>
-  function registration(handler) {
-    document.getElementById('myForm').action = handler;
-  }
-
-  function login() {
-    alert("Action 2 performed");
-    //Здесь ваш код для второго действия
-  }
-</script>

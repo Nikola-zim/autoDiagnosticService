@@ -26,9 +26,8 @@ func newIconRecognitionRoutes(handler *gin.RouterGroup, t usecase.Recognition, l
 
 	u := handler.Group("/user")
 	{
-		u.GET("/register", r.authPage)
+		u.GET("/main_page", r.authPage)
 		u.POST("/register", r.register)
-		u.GET("/login", r.authPage)
 		u.POST("/login", r.login)
 	}
 
@@ -62,7 +61,7 @@ func (r *recognition) doRecognition(c *gin.Context) {
 }
 
 func (r *recognition) uploadDashboard(c *gin.Context) {
-	c.HTML(http.StatusOK, "mainScreen.html", gin.H{
+	c.HTML(http.StatusOK, "recognition.html", gin.H{
 		"block_title": "Test page",
 	})
 }
@@ -74,9 +73,6 @@ func (r *recognition) authPage(c *gin.Context) {
 }
 
 func (r *recognition) register(c *gin.Context) {
-	c.HTML(http.StatusOK, "auth.html", gin.H{
-		"block_title": "Test page",
-	})
 	var user entity.User
 	user.Login = c.PostForm("uname")
 	user.Password = c.PostForm("psw")
@@ -85,13 +81,36 @@ func (r *recognition) register(c *gin.Context) {
 
 	err := r.useCase.AddUser(c, user)
 	if err != nil {
-		c.String(http.StatusBadRequest, fmt.Sprintf("Wrong input or user already exists: %s", err.Error()))
+		c.HTML(http.StatusOK, "auth.html", gin.H{
+			"block_title": "Authorization",
+			"status":      "Registration failed!",
+		})
 		return
 	}
+	c.HTML(http.StatusOK, "auth.html", gin.H{
+		"block_title": "Authorization",
+		"status":      "User added! Please, login",
+	})
 }
 
 func (r *recognition) login(c *gin.Context) {
-	c.HTML(http.StatusOK, "auth.html", gin.H{
-		"block_title": "Test page",
-	})
+
+	var user entity.User
+	user.Login = c.PostForm("uname")
+	user.Password = c.PostForm("psw")
+
+	r.l.Info("Username: %s; Password: %s", user.Login, user.Password)
+
+	ok, err := r.useCase.Login(c, user)
+	if err != nil || ok != true {
+		c.HTML(http.StatusOK, "auth.html", gin.H{
+			"block_title": "Authorization",
+			"status":      "authentication failed!",
+		})
+	} else {
+		c.HTML(http.StatusOK, "auth.html", gin.H{
+			"block_title": "Authorization",
+			"status":      "successfully authenticated!",
+		})
+	}
 }

@@ -41,6 +41,7 @@ const (
 		VALUES ($1, $2)
 		RETURNING user_id;`
 	login = `
-		SELECT user_id FROM users
-		WHERE login = $1 AND password = $2;`
+		SELECT user_id, count(user_id) FROM users
+		WHERE login = $1 AND password = $2
+		GROUP BY user_id;`
 )

@@ -28,6 +28,7 @@ type (
 
 	Auth interface {
 		AddUser(context.Context, entity.User) error
+		Login(context.Context, entity.User) (bool, error)
 	}
 
 	DetectionWorker interface {
