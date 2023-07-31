@@ -61,6 +61,7 @@ func Run(cfg *config.Config) {
 
 	// HTTP Server
 	handler := gin.New()
+	handler.Static("pkg/file_storage/detected", "/home/nikolay/Programming/autoDiagnosticService/")
 	v1.NewRouter(handler, l, detectionUseCase)
 	httpServer := httpserver.New(handler, telegramBot, httpserver.Port(cfg.HTTP.Port))
 

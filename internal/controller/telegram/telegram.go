@@ -63,7 +63,6 @@ func (tg *Telegram) Start() {
 		for update := range updates {
 
 			if update.Message != nil { // If we got a message
-				//log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 				// Если сообщение содержит изображение
 				if update.Message.Photo != nil {
 					// Получаем информацию об изображении
