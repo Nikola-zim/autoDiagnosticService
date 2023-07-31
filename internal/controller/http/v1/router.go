@@ -6,7 +6,6 @@ import (
 	"github.com/evrone/go-clean-template/pkg/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"net/http"
 )
 
 // NewRouter -.
@@ -18,7 +17,7 @@ func NewRouter(handler *gin.Engine, l logger.Interface, t usecase.Recognition) {
 	// Static файлы
 
 	handler.Static("/internal/controller/static/templates/css", "./internal/controller/static/templates/css")
-	handler.StaticFS("/internal/controller/static/images", http.Dir("my_file_system"))
+	handler.Static("/pkg/file_storage/detected", "./pkg/file_storage/detected")
 	handler.LoadHTMLGlob("./internal/controller/static/templates/html/*.html")
 
 	// Prometheus metrics
