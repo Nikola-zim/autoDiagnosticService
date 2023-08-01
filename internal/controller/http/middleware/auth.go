@@ -4,7 +4,6 @@ import (
 	"github.com/evrone/go-clean-template/internal/entity"
 	"github.com/evrone/go-clean-template/internal/usecase"
 	"github.com/evrone/go-clean-template/pkg/logger"
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -81,11 +80,13 @@ func (au *Auth) login(c *gin.Context) {
 			"status":      "authentication failed!",
 		})
 	} else {
-		session := sessions.Default(c)
-		session.Set(userKey, "username")
+		//Устанавливаем куку
+		c.SetCookie("user_id", "cookie", 3600, "/", "localhost", false, true)
+		// переброска данных далее в запрос
+		c.Set("user_ID", "cookie")
 		// Передача запроса в handler
 		au.l.Info("neeeext")
-		c.Redirect(http.StatusTemporaryRedirect, au.nextURL)
+		c.Redirect(http.StatusFound, au.nextURL)
 	}
 }
 
@@ -112,16 +113,15 @@ func (au *Auth) logout(c *gin.Context) {
 // AuthRequired - middleware для cookie
 func (au *Auth) AuthRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		session := sessions.Default(c)
-		user := session.Get(userKey)
-		if user == nil {
+		user_id, err := c.Cookie("user_id")
+		if err != nil {
 			// Redirect to auth page
 			c.Redirect(http.StatusTemporaryRedirect, au.path+"/main_page")
 			return
 		}
 
 		//log.Printf("user_ID: %s \n", cookie)
-		au.l.Info("user_ID: %v \n", user)
+		au.l.Info("user_ID: %v \n", user_id)
 		// Передача запроса в handler
 		c.Next()
 	}
