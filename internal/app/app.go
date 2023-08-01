@@ -4,10 +4,13 @@ package app
 import (
 	"context"
 	"fmt"
+	"github.com/evrone/go-clean-template/internal/controller/http/middleware"
 	"github.com/evrone/go-clean-template/internal/entity"
 	"github.com/evrone/go-clean-template/internal/usecase/repo"
 	"github.com/evrone/go-clean-template/internal/usecase/worker"
 	"github.com/evrone/go-clean-template/pkg/postgres"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"os"
 	"os/signal"
 	"syscall"
@@ -61,7 +64,12 @@ func Run(cfg *config.Config) {
 
 	// HTTP Server
 	handler := gin.New()
-	v1.NewRouter(handler, l, detectionUseCase)
+	// Setup the cookie store for session management
+	var secret = []byte("secret")
+	handler.Use(sessions.Sessions("mysession", cookie.NewStore(secret)))
+	au := middleware.NewAuth(l, detectionUseCase)
+	router := v1.NewRouter(au)
+	router.InitRoutes(handler, l, detectionUseCase)
 	httpServer := httpserver.New(handler, telegramBot, httpserver.Port(cfg.HTTP.Port))
 
 	// Waiting signal

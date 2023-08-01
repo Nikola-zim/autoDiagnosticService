@@ -36,13 +36,6 @@ func newIconRecognitionRoutes(handler *gin.RouterGroup, t usecase.Recognition, l
 		h.POST("/doRecognition", r.doRecognition)
 	}
 
-	u := handler.Group("/user")
-	{
-		u.GET("/main_page", r.authPage)
-		u.POST("/register", r.register)
-		u.POST("/login", r.login)
-	}
-
 	b := handler.Group("/balance")
 	{
 		b.GET("/sum", r.uploadDashboard)
@@ -147,50 +140,4 @@ func downloadFile(url string, messageID string) (string, error) {
 		return "", err
 	}
 	return filePathAndName, nil
-}
-
-func (r *recognition) authPage(c *gin.Context) {
-	c.HTML(http.StatusOK, "auth.html", gin.H{
-		"block_title": "Test page",
-	})
-}
-
-func (r *recognition) register(c *gin.Context) {
-	var user entity.User
-	user.Login = c.PostForm("uname")
-	user.Password = c.PostForm("psw")
-
-	r.l.Info("Username: %s; Password: %s", user.Login, user.Password)
-
-	err := r.useCase.AddUser(c, user)
-	if err != nil {
-		c.HTML(http.StatusOK, "auth.html", gin.H{
-			"block_title": "Authorization",
-			"status":      "Registration failed!",
-		})
-		return
-	}
-	c.HTML(http.StatusOK, "auth.html", gin.H{
-		"block_title": "Authorization",
-		"status":      "User added! Please, login",
-	})
-}
-
-func (r *recognition) login(c *gin.Context) {
-
-	var user entity.User
-	user.Login = c.PostForm("uname")
-	user.Password = c.PostForm("psw")
-
-	r.l.Info("Username: %s; Password: %s", user.Login, user.Password)
-
-	ok, err := r.useCase.Login(c, user)
-	if err != nil || ok != true {
-		c.HTML(http.StatusOK, "auth.html", gin.H{
-			"block_title": "Authorization",
-			"status":      "authentication failed!",
-		})
-	} else {
-		r.uploadDashboard(c)
-	}
 }

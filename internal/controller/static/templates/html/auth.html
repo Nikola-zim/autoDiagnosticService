@@ -8,19 +8,19 @@
 <body>
 <div class="container">
   <div class="container_sub">
-    <form id="Login" action="/v1/user/login " method="post">
+    <form id="Login" action="{{ .URL }}" method="post">
       <label><b>Login</b></label>
 
       <input type="text" placeholder="Enter Username" name="uname" required>
 
       <input type="password" placeholder="Enter Password" name="psw" required>
 
-      <button type="submit" onclick="login('/v1/user/login');">Login</button>
+      <button type="submit">Login</button>
 
     </form>
   </div>
   <div class="container_sub">
-    <form id="Registration" action="/v1/user/register " method="post">
+    <form id="Registration" action="{{ .URL }}" method="post">
       <label><b>Registration</b></label>
 
       <input type="text" placeholder="Enter Username" name="uname" required>

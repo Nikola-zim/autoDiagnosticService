@@ -1,54 +1,128 @@
 package middleware
 
 import (
+	"github.com/evrone/go-clean-template/internal/entity"
 	"github.com/evrone/go-clean-template/internal/usecase"
+	"github.com/evrone/go-clean-template/pkg/logger"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
-type UserInteract struct {
-	s usecase.Recognition
+const userKey = "user"
+
+type Auth struct {
+	useCase usecase.Recognition
+	l       logger.Interface
+	path    string
+	nextURL string
 }
 
-func NewUserInteract(service usecase.Recognition) *UserInteract {
-	return &UserInteract{
-		s: service,
+func NewAuth(l logger.Interface, useCase usecase.Recognition) *Auth {
+	return &Auth{
+		l:       l,
+		useCase: useCase,
 	}
 }
 
-//// Middleware для cookie
-//func (uI *UserInteract) CookieSetAndGet() gin.HandlerFunc {
-//	return func(c *gin.Context) {
-//		cookie, err := c.Cookie("user_id")
-//		if err != nil {
-//			// Добавим юзера
-//			cookie, id, err := uI.s.AddUser()
-//			if err != nil {
-//				return
-//			}
-//			//Устанавливаем куку
-//			c.SetCookie("user_id", cookie, 3600, "/", "localhost", false, true)
-//			// переброска данных далее в запрос
-//			c.Set("user_ID", id)
-//			c.Next()
-//			return
-//		}
-//		// Нахождение пользователя и проверка куки
-//		id, ok := uI.s.FindUser(cookie)
-//		if !ok {
-//			// Добавим юзера
-//			cookie, id, err = uI.s.AddUser()
-//			if err != nil {
-//				return
-//			}
-//			//Устанавливаем куку
-//			c.SetCookie("user_id", cookie, 3600, "/", "localhost", false, true)
-//			c.Set("user_ID", id)
-//			c.Next()
-//			return
-//		}
-//
-//		//log.Printf("user_ID: %s \n", cookie)
-//		log.Printf("user_ID: %v \n", id)
-//		// Передача запроса в handler
-//		c.Next()
-//	}
-//}
+func (au *Auth) NewAuthRoutes(handler *gin.RouterGroup, path string, nextURL string) {
+	au.path = path
+	au.nextURL = nextURL
+	// Login and logout routes
+	u := handler.Group("")
+	{
+		u.GET("/main_page", au.authPage)
+		u.POST("/register", au.register)
+		u.POST("/login", au.login)
+		u.GET("/logout", au.logout)
+	}
+}
+
+func (au *Auth) authPage(c *gin.Context) {
+	c.HTML(http.StatusOK, "auth.html", gin.H{
+		"block_title": "Test page",
+		"URL":         au.path + "/login",
+	})
+}
+
+func (au *Auth) register(c *gin.Context) {
+	var user entity.User
+	user.Login = c.PostForm("uname")
+	user.Password = c.PostForm("psw")
+
+	au.l.Info("Username: %s; Password: %s", user.Login, user.Password)
+
+	err := au.useCase.AddUser(c, user)
+	if err != nil {
+		c.HTML(http.StatusOK, "auth.html", gin.H{
+			"block_title": "Authorization",
+			"status":      "Registration failed!",
+		})
+		return
+	}
+	c.HTML(http.StatusOK, "auth.html", gin.H{
+		"block_title": "Authorization",
+		"status":      "User added! Please, login",
+	})
+}
+
+func (au *Auth) login(c *gin.Context) {
+
+	var user entity.User
+	user.Login = c.PostForm("uname")
+	user.Password = c.PostForm("psw")
+
+	au.l.Info("Username: %s; Password: %s", user.Login, user.Password)
+
+	ok, err := au.useCase.Login(c, user)
+	if err != nil || ok != true {
+		c.HTML(http.StatusUnauthorized, "auth.html", gin.H{
+			"block_title": "Authorization",
+			"status":      "authentication failed!",
+		})
+	} else {
+		session := sessions.Default(c)
+		session.Set(userKey, "username")
+		// Передача запроса в handler
+		au.l.Info("neeeext")
+		c.Redirect(http.StatusTemporaryRedirect, au.nextURL)
+	}
+}
+
+func (au *Auth) logout(c *gin.Context) {
+
+	var user entity.User
+	user.Login = c.PostForm("uname")
+	user.Password = c.PostForm("psw")
+
+	au.l.Info("Username: %s; Password: %s", user.Login, user.Password)
+
+	ok, err := au.useCase.Login(c, user)
+	if err != nil || ok != true {
+		c.HTML(http.StatusOK, "auth.html", gin.H{
+			"block_title": "Authorization",
+			"status":      "authentication failed!",
+		})
+	} else {
+		// Передача запроса в handler
+		c.Next()
+	}
+}
+
+// AuthRequired - middleware для cookie
+func (au *Auth) AuthRequired() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		session := sessions.Default(c)
+		user := session.Get(userKey)
+		if user == nil {
+			// Redirect to auth page
+			c.Redirect(http.StatusTemporaryRedirect, au.path+"/main_page")
+			return
+		}
+
+		//log.Printf("user_ID: %s \n", cookie)
+		au.l.Info("user_ID: %v \n", user)
+		// Передача запроса в handler
+		c.Next()
+	}
+}
