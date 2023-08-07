@@ -23,21 +23,23 @@ type DetectionWebAPI struct {
 	scheduler *gocron.Scheduler
 	useCase   usecase.Recognition
 	newAnswer chan bool
+	host      string
 }
 
 const (
 	defaultLocation          = "Europe/Moscow"
-	defaultDetectedImagePath = "pkg/file_storage/detected"
+	defaultDetectedImagePath = "internal/file_storage/detected"
 	layout                   = "2006_01_02"
 )
 
 // NewDetectionWebAPI -.
-func NewDetectionWebAPI(useCase usecase.Recognition, newAnswer chan bool) *DetectionWebAPI {
+func NewDetectionWebAPI(useCase usecase.Recognition, newAnswer chan bool, host string) *DetectionWebAPI {
 	location, _ := time.LoadLocation(defaultLocation)
 	return &DetectionWebAPI{
 		useCase:   useCase,
 		scheduler: gocron.NewScheduler(location),
 		newAnswer: newAnswer,
+		host:      host,
 	}
 }
 
@@ -93,7 +95,7 @@ func (dw *DetectionWebAPI) serverRecognitionQuery(ctx context.Context, tasks []e
 		writer.Close()
 
 		// Создаем запрос POST
-		req, err := http.NewRequest("POST", "http://192.168.1.4:5000/v1/object-detection/yolov5", &buf)
+		req, err := http.NewRequest("POST", dw.host, &buf)
 		if err != nil {
 			return err
 		}

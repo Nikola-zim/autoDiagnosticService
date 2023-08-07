@@ -1,13 +1,13 @@
 CREATE TABLE IF NOT EXISTS users(
     user_id SERIAL PRIMARY KEY,
     login VARCHAR UNIQUE,
-    password VARCHAR
+    password VARCHAR,
+    balance INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS requests(
    ID SERIAL,
-   user_id INTEGER,
-   FOREIGN KEY (user_id) REFERENCES users(user_id),
+   login VARCHAR(255),
    chat_id INTEGER,
    image_path_name VARCHAR(255),
    detected_path_name VARCHAR(255),

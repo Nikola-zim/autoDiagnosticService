@@ -9,11 +9,12 @@ import (
 type (
 	// Config -.
 	Config struct {
-		App  `yaml:"app"`
-		HTTP `yaml:"http"`
-		Log  `yaml:"logger"`
-		PG   `yaml:"postgres"`
-		TG   `yaml:"telegram"`
+		App      `yaml:"app"`
+		HTTP     `yaml:"http"`
+		Log      `yaml:"logger"`
+		PG       `yaml:"postgres"`
+		TG       `yaml:"telegram"`
+		Detector `yaml:"detector"`
 	}
 
 	// App -.
@@ -41,6 +42,10 @@ type (
 	// TG -.
 	TG struct {
 		BotToken string `env-required:"true" yaml:"bot_token" env:"TG_TOKEN"`
+	}
+
+	Detector struct {
+		URL string `env-required:"true" yaml:"host" env:"HOST"`
 	}
 )
 

@@ -11,8 +11,21 @@ const (
 
 const (
 	newTask = `
-		INSERT INTO requests (chat_id, image_path_name, status_code)
-		VALUES ($1, $2, $3);`
+		INSERT INTO requests (chat_id, image_path_name, status_code, login)
+		VALUES ($1, $2, $3, $4);`
+
+	checkBalance = `
+		SELECT balance FROM users
+		WHERE login = $1;`
+
+	debiting = `
+		UPDATE users
+		SET balance = balance - 1
+		WHERE login = $1;`
+
+	newTaskWEB = `
+		INSERT INTO requests (chat_id, image_path_name, status_code, login)
+		VALUES ($1, $2, $3, $4);`
 
 	getTasks = `
 		SELECT id, chat_id, image_path_name FROM requests
@@ -29,7 +42,12 @@ const (
 	getAnswers = `
 		SELECT id, chat_id, detected_path_name, description
 		FROM requests
-		WHERE status_code = 3;`
+		WHERE status_code = 3 AND chat_id != 0;`
+
+	getUserAnswers = `
+		SELECT id, detected_path_name, description
+		FROM requests
+		WHERE chat_id = 0 AND login = $1;`
 
 	changeToDone = `
 		UPDATE requests

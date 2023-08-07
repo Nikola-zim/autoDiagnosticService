@@ -3,7 +3,7 @@ package entity
 type Request struct {
 	ID             int64
 	ChatID         int64
-	UserID         int64
+	UserID         string
 	ImagePathName  string
 	ResImgPathName string
 	Description    string

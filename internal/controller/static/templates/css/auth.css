@@ -16,6 +16,13 @@ body {
     border-bottom: 1px solid black;
     margin-bottom: 8px;
 }
+
+.image-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
 input[type=text], input[type=password] {
     width: 100%;
     padding: 12px 20px;

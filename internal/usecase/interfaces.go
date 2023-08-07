@@ -14,16 +14,19 @@ type (
 		AddRequest(context.Context, entity.Request) error
 		GetRecognitionTasks(context.Context) ([]entity.Request, error)
 		MakeRecognized(context.Context, entity.Request) error
-		GetRecognitionAnswers(ctx context.Context) ([]entity.Request, error)
+		GetRecognitionAnswersTG(ctx context.Context) ([]entity.Request, error)
+		GetRecognitionAnswersWEB(ctx context.Context, userName string) ([]entity.Request, error)
 		Auth
 	}
 
 	// Repo -.
 	Repo interface {
 		AddRequest(context.Context, entity.Request) error
+		AddRequestWEB(context.Context, entity.Request) error
 		GetRecognitionTasks(context.Context) ([]entity.Request, error)
 		MakeRecognized(context.Context, entity.Request) error
-		GetRecognitionAnswers(context.Context) ([]entity.Request, error)
+		GetRecognitionAnswersTG(context.Context) ([]entity.Request, error)
+		GetRecognitionAnswersWEB(ctx context.Context, userName string) ([]entity.Request, error)
 	}
 
 	Auth interface {

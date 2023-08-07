@@ -3,6 +3,7 @@ package v1
 import (
 	"fmt"
 	"github.com/evrone/go-clean-template/internal/entity"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/nfnt/resize"
 	"image"
@@ -19,7 +20,7 @@ import (
 
 const (
 	layout   = "2006_01_02"
-	filePath = "./pkg/file_storage/images/"
+	filePath = "./internal/file_storage/images/"
 )
 
 type recognition struct {
@@ -32,14 +33,14 @@ func newIconRecognitionRoutes(handler *gin.RouterGroup, t usecase.Recognition, l
 
 	h := handler.Group("/api")
 	{
-		h.GET("/doRecognition", r.uploadDashboard)
-		h.POST("/doRecognition", r.doRecognition)
+		h.GET("/recognized_images", r.recognizedImages)
+		h.POST("/recognize", r.uploadImage)
 	}
 
 	b := handler.Group("/balance")
 	{
-		b.GET("/sum", r.uploadDashboard)
-		b.POST("/add", r.doRecognition)
+		b.GET("/sum", r.pointsSum)
+		b.POST("/add", r.addPoints)
 	}
 }
 
@@ -47,7 +48,7 @@ type doRecognitionResponse struct {
 	recognitionResult []string
 }
 
-func (r *recognition) doRecognition(c *gin.Context) {
+func (r *recognition) uploadImage(c *gin.Context) {
 	// Получим файл из запроса
 	file, err := c.FormFile("file")
 	if err != nil {
@@ -90,8 +91,10 @@ func (r *recognition) doRecognition(c *gin.Context) {
 		return
 	}
 	// Add record to pg for worker
+	session := sessions.Default(c)
+	user := session.Get(userKey)
 	newReq := entity.Request{
-		UserID:        0,
+		UserID:        fmt.Sprintf("%v", user),
 		ImagePathName: filePathName,
 	}
 	err = r.useCase.AddRequest(c, newReq)
@@ -101,10 +104,31 @@ func (r *recognition) doRecognition(c *gin.Context) {
 
 }
 
-func (r *recognition) uploadDashboard(c *gin.Context) {
+func (r *recognition) recognizedImages(c *gin.Context) {
+	session := sessions.Default(c)
+	user := session.Get(userKey)
+	results, err := r.useCase.GetRecognitionAnswersWEB(c, fmt.Sprintf("%v", user))
+	if err != nil {
+		log.Println(err)
+	}
+
+	images := make([]string, 0, len(results))
+	for _, v := range results {
+		images = append(images, v.ResImgPathName)
+	}
+
 	c.HTML(http.StatusOK, "recognition.html", gin.H{
 		"block_title": "Test page",
+		"Images":      images,
 	})
+}
+
+func (r *recognition) addPoints(context *gin.Context) {
+
+}
+
+func (r *recognition) pointsSum(context *gin.Context) {
+
 }
 
 // Функция для загрузки файла с указанного URL

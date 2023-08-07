@@ -22,5 +22,5 @@ bin/
 # Dependency directories (remove the comment below to include it)
 vendor/
 
-pkg/file_storage/detected
-pkg/file_storage/images
+internal/file_storage/detected
+internal/file_storage/images

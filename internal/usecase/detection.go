@@ -18,6 +18,9 @@ func New(repo Repo, auth Auth) *RecognitionUseCase {
 }
 
 func (ir *RecognitionUseCase) AddRequest(ctx context.Context, req entity.Request) error {
+	if req.ChatID == 0 {
+		return ir.Repo.AddRequestWEB(ctx, req)
+	}
 	return ir.Repo.AddRequest(ctx, req)
 }
 
@@ -29,8 +32,12 @@ func (ir *RecognitionUseCase) MakeRecognized(ctx context.Context, req entity.Req
 	return ir.Repo.MakeRecognized(ctx, req)
 }
 
-func (ir *RecognitionUseCase) GetRecognitionAnswers(ctx context.Context) ([]entity.Request, error) {
-	return ir.Repo.GetRecognitionAnswers(ctx)
+func (ir *RecognitionUseCase) GetRecognitionAnswersTG(ctx context.Context) ([]entity.Request, error) {
+	return ir.Repo.GetRecognitionAnswersTG(ctx)
+}
+
+func (ir *RecognitionUseCase) GetRecognitionAnswersWEB(ctx context.Context, userName string) ([]entity.Request, error) {
+	return ir.Repo.GetRecognitionAnswersWEB(ctx, userName)
 }
 
 func (ir *RecognitionUseCase) AddUser(c context.Context, u entity.User) error {

@@ -102,7 +102,7 @@ func (tg *Telegram) Start() {
 	}()
 	for {
 		if <-tg.newAnswer {
-			results, err := tg.useCase.GetRecognitionAnswers(ctx)
+			results, err := tg.useCase.GetRecognitionAnswersTG(ctx)
 			if err != nil {
 				log.Println(err)
 			}

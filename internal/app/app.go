@@ -4,7 +4,7 @@ package app
 import (
 	"context"
 	"fmt"
-	"github.com/evrone/go-clean-template/internal/controller/http/middleware"
+	"github.com/evrone/go-clean-template/internal/controller/http/middlewares"
 	"github.com/evrone/go-clean-template/internal/entity"
 	"github.com/evrone/go-clean-template/internal/usecase/repo"
 	"github.com/evrone/go-clean-template/internal/usecase/worker"
@@ -45,7 +45,7 @@ func Run(cfg *config.Config) {
 	)
 
 	// Detection Worker
-	detectionWorker := worker.NewDetectionWebAPI(detectionUseCase, newAnswer)
+	detectionWorker := worker.NewDetectionWebAPI(detectionUseCase, newAnswer, cfg.Detector.URL)
 	go func() {
 		err = detectionWorker.Run(context.Background())
 		if err != nil {
@@ -62,7 +62,7 @@ func Run(cfg *config.Config) {
 
 	// HTTP Server
 	handler := gin.New()
-	au := middleware.NewAuth(l, detectionUseCase)
+	au := middlewares.NewAuth(l)
 	router := v1.NewRouter(au)
 	router.InitRoutes(handler, l, detectionUseCase)
 	httpServer := httpserver.New(handler, telegramBot, httpserver.Port(cfg.HTTP.Port))

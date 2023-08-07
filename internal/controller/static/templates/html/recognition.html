@@ -6,17 +6,13 @@
 </head>
 <body>
     <div class="main_screen">
-        <form action="/v1/private/api/doRecognition" method="post" enctype="multipart/form-data" class="form_box">
-            <h1>Загрузка фото</h1>
-            <label for="file-input">Выберите файл</label>
-            <input type="file" name='file' id="file-input">
-            <div id="filename"></div>
-            <input type="submit" class ="default-button" value="Отправить">
-        </form>
         <div class="chat_box">
-            <img src="/pkg/file_storage/detected/2023_07_24/to_detect199.jpg" alt="smth" width="640"
-                 height="640" />
-            <p>{{.description}}</p>
+            {{ range .Images }}
+                <div class="image-item">
+                    <img src="/{{.}}" alt="Image" width="640"
+                         height="640" />
+                </div>
+            {{ end }}
         </div>
     </div>
     <script>
