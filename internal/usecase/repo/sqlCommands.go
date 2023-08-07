@@ -18,6 +18,11 @@ const (
 		SELECT balance FROM users
 		WHERE login = $1;`
 
+	addBalance = `
+		UPDATE users
+		SET balance = balance + $1
+		WHERE login = $2;`
+
 	debiting = `
 		UPDATE users
 		SET balance = balance - 1

@@ -47,3 +47,7 @@ func (ir *RecognitionUseCase) AddUser(c context.Context, u entity.User) error {
 func (ir *RecognitionUseCase) Login(c context.Context, u entity.User) (bool, error) {
 	return ir.Auth.Login(c, u)
 }
+
+func (ir *RecognitionUseCase) AddPoints(ctx context.Context, number int, username string) error {
+	return ir.Repo.AddPoints(ctx, number, username)
+}

@@ -222,3 +222,8 @@ func (ir *RecognitionRepo) GetRecognitionAnswersWEB(ctx context.Context, userNam
 	err = tx.Commit(ctx)
 	return results, nil
 }
+
+func (ir *RecognitionRepo) AddPoints(ctx context.Context, number int, username string) error {
+	_, err := ir.postgres.Pool.Exec(ctx, addBalance, number, username)
+	return err
+}

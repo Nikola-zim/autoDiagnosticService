@@ -17,6 +17,7 @@ type (
 		GetRecognitionAnswersTG(ctx context.Context) ([]entity.Request, error)
 		GetRecognitionAnswersWEB(ctx context.Context, userName string) ([]entity.Request, error)
 		Auth
+		Balance
 	}
 
 	// Repo -.
@@ -27,6 +28,11 @@ type (
 		MakeRecognized(context.Context, entity.Request) error
 		GetRecognitionAnswersTG(context.Context) ([]entity.Request, error)
 		GetRecognitionAnswersWEB(ctx context.Context, userName string) ([]entity.Request, error)
+		Balance
+	}
+
+	Balance interface {
+		AddPoints(ctx context.Context, number int, userName string) error
 	}
 
 	Auth interface {

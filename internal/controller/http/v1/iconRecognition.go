@@ -5,9 +5,7 @@ import (
 	"github.com/evrone/go-clean-template/internal/entity"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/nfnt/resize"
 	"image"
-	"image/jpeg"
 	"log"
 	"net/http"
 	"os"
@@ -39,7 +37,6 @@ func newIconRecognitionRoutes(handler *gin.RouterGroup, t usecase.Recognition, l
 
 	b := handler.Group("/balance")
 	{
-		b.GET("/sum", r.pointsSum)
 		b.POST("/add", r.addPoints)
 	}
 }
@@ -99,7 +96,9 @@ func (r *recognition) uploadImage(c *gin.Context) {
 	}
 	err = r.useCase.AddRequest(c, newReq)
 	if err != nil {
-		log.Println(err)
+		errorResponse(c, http.StatusUnauthorized, fmt.Sprintf("%s", err))
+	} else {
+		c.JSON(http.StatusOK, gin.H{"message": "Image uploaded!"})
 	}
 
 }
@@ -123,45 +122,19 @@ func (r *recognition) recognizedImages(c *gin.Context) {
 	})
 }
 
-func (r *recognition) addPoints(context *gin.Context) {
-
-}
-
-func (r *recognition) pointsSum(context *gin.Context) {
-
-}
-
-// Функция для загрузки файла с указанного URL
-func downloadFile(url string, messageID string) (string, error) {
-	date := time.Now().Format(layout)
-	fileName := date + "/to_detect" + messageID + ".jpg"
-	filePathAndName := fmt.Sprintf(filePath+"%s", fileName)
-	// Создаем dir
-	if _, err := os.Stat(filePath + "/" + date); os.IsNotExist(err) {
-		os.MkdirAll(filePath+"/"+date, 0700) // Create your file
-	}
-
-	// Save image
-	out, err := os.Create(filePathAndName)
+func (r *recognition) addPoints(c *gin.Context) {
+	session := sessions.Default(c)
+	user := session.Get(userKey)
+	var balanceAdd entity.Balance
+	err := c.ShouldBindJSON(&balanceAdd)
 	if err != nil {
-		return "", err
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
 	}
-	defer out.Close()
-
-	// Получаем содержимое файла по URL и записываем в созданный файл
-	resp, err := http.Get(url)
+	err = r.useCase.AddPoints(c, balanceAdd.Points, fmt.Sprintf("%v", user))
 	if err != nil {
-		return "", err
+		errorResponse(c, http.StatusBadRequest, fmt.Sprintf("%s", err))
 	}
-	defer resp.Body.Close()
 
-	receivedImage, _, err := image.Decode(resp.Body)
-	// Resize to 640x640
-	newImage := resize.Resize(640, 640, receivedImage, resize.Lanczos3)
-	// Save image
-	err = jpeg.Encode(out, newImage, nil)
-	if err != nil {
-		return "", err
-	}
-	return filePathAndName, nil
+	c.JSON(http.StatusOK, gin.H{"message": "Balance is replenished!"})
 }

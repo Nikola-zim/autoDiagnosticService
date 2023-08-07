@@ -23,3 +23,7 @@ type User struct {
 	Login    string
 	Password string
 }
+
+type Balance struct {
+	Points int `json:"points"`
+}
