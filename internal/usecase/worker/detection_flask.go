@@ -1,12 +1,13 @@
 package worker
 
 import (
+	"autoDiagnosticService/config"
+	"autoDiagnosticService/internal/entity"
+	"autoDiagnosticService/internal/usecase"
 	"bytes"
 	"context"
 	b64 "encoding/base64"
 	"encoding/json"
-	"github.com/evrone/go-clean-template/internal/entity"
-	"github.com/evrone/go-clean-template/internal/usecase"
 	"github.com/go-co-op/gocron"
 	"github.com/rs/zerolog/log"
 	"io"
@@ -23,7 +24,7 @@ type DetectionWebAPI struct {
 	scheduler *gocron.Scheduler
 	useCase   usecase.Recognition
 	newAnswer chan bool
-	host      string
+	config    config.Detector
 }
 
 const (
@@ -33,13 +34,13 @@ const (
 )
 
 // NewDetectionWebAPI -.
-func NewDetectionWebAPI(useCase usecase.Recognition, newAnswer chan bool, host string) *DetectionWebAPI {
+func NewDetectionWebAPI(useCase usecase.Recognition, newAnswer chan bool, config config.Detector) *DetectionWebAPI {
 	location, _ := time.LoadLocation(defaultLocation)
 	return &DetectionWebAPI{
 		useCase:   useCase,
 		scheduler: gocron.NewScheduler(location),
 		newAnswer: newAnswer,
-		host:      host,
+		config:    config,
 	}
 }
 
@@ -85,7 +86,7 @@ func (dw *DetectionWebAPI) serverRecognitionQuery(ctx context.Context, tasks []e
 		writer := multipart.NewWriter(&buf)
 
 		// Добавляем файл в форму
-		part, err := writer.CreateFormFile("image", "accumulator.jpg")
+		part, err := writer.CreateFormFile(dw.config.FormField, dw.config.FormName)
 		if err != nil {
 			return err
 		}
@@ -95,7 +96,7 @@ func (dw *DetectionWebAPI) serverRecognitionQuery(ctx context.Context, tasks []e
 		writer.Close()
 
 		// Создаем запрос POST
-		req, err := http.NewRequest("POST", dw.host, &buf)
+		req, err := http.NewRequest("POST", dw.config.URL, &buf)
 		if err != nil {
 			return err
 		}

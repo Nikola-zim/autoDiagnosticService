@@ -2,27 +2,27 @@
 package app
 
 import (
+	"autoDiagnosticService/internal/controller/http/middlewares"
+	"autoDiagnosticService/internal/entity"
+	"autoDiagnosticService/internal/usecase/repo"
+	"autoDiagnosticService/internal/usecase/worker"
+	"autoDiagnosticService/pkg/postgres"
 	"context"
 	"fmt"
-	"github.com/evrone/go-clean-template/internal/controller/http/middlewares"
-	"github.com/evrone/go-clean-template/internal/entity"
-	"github.com/evrone/go-clean-template/internal/usecase/repo"
-	"github.com/evrone/go-clean-template/internal/usecase/worker"
-	"github.com/evrone/go-clean-template/pkg/postgres"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/evrone/go-clean-template/config"
-	v1 "github.com/evrone/go-clean-template/internal/controller/http/v1"
-	"github.com/evrone/go-clean-template/internal/usecase"
-	"github.com/evrone/go-clean-template/pkg/httpserver"
-	"github.com/evrone/go-clean-template/pkg/logger"
-	_ "github.com/evrone/go-clean-template/pkg/postgres"
+	"autoDiagnosticService/config"
+	v1 "autoDiagnosticService/internal/controller/http/v1"
+	"autoDiagnosticService/internal/usecase"
+	"autoDiagnosticService/pkg/httpserver"
+	"autoDiagnosticService/pkg/logger"
+	_ "autoDiagnosticService/pkg/postgres"
 
-	"github.com/evrone/go-clean-template/internal/controller/telegram"
+	"autoDiagnosticService/internal/controller/telegram"
 )
 
 // Run creates objects via constructors.
@@ -45,7 +45,7 @@ func Run(cfg *config.Config) {
 	)
 
 	// Detection Worker
-	detectionWorker := worker.NewDetectionWebAPI(detectionUseCase, newAnswer, cfg.Detector.URL)
+	detectionWorker := worker.NewDetectionWebAPI(detectionUseCase, newAnswer, cfg.Detector)
 	go func() {
 		err = detectionWorker.Run(context.Background())
 		if err != nil {

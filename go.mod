@@ -1,4 +1,4 @@
-module github.com/evrone/go-clean-template
+module autoDiagnosticService
 
 go 1.17
 
@@ -10,6 +10,7 @@ require (
 	github.com/go-co-op/gocron v1.28.3
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
 	github.com/golang-migrate/migrate/v4 v4.15.1
+	github.com/golang/mock v1.6.0
 	github.com/ilyakaznacheev/cleanenv v1.4.2
 	github.com/jackc/pgx/v4 v4.14.1
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646

@@ -1,9 +1,8 @@
 package v1
 
 import (
-	"github.com/evrone/go-clean-template/internal/entity"
-	"github.com/evrone/go-clean-template/internal/usecase"
-	"github.com/evrone/go-clean-template/pkg/logger"
+	"autoDiagnosticService/internal/entity"
+	"autoDiagnosticService/pkg/logger"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -15,21 +14,21 @@ const (
 )
 
 type AuthHandlers struct {
-	useCase usecase.Recognition
+	UseCase Recognition
 	l       logger.Interface
 }
 
-func NewAuthHandlers(handler *gin.RouterGroup, useCase usecase.Recognition, l logger.Interface) {
+func NewAuthHandlers(handler *gin.RouterGroup, useCase Recognition, l logger.Interface) {
 	au := &AuthHandlers{
 		l:       l,
-		useCase: useCase,
+		UseCase: useCase,
 	}
-	// Login and logout routes
+	// LoginWEB and logout routes
 	u := handler.Group("")
 	{
 		u.GET("/main_page", au.authPage)
 		u.POST("/register", au.register)
-		u.POST("/login", au.login)
+		u.POST("/login", au.LoginWEB)
 		u.GET("/logout", au.logout)
 	}
 }
@@ -52,14 +51,14 @@ func (au *AuthHandlers) register(c *gin.Context) {
 		return
 	}
 
-	err := au.useCase.AddUser(c, user)
+	err := au.UseCase.AddUser(c, user)
 	if err != nil {
 		errorResponse(c, http.StatusUnauthorized, "Registration failed")
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully registered user"})
 }
 
-func (au *AuthHandlers) login(c *gin.Context) {
+func (au *AuthHandlers) LoginWEB(c *gin.Context) {
 
 	var user entity.User
 	user.Login = c.PostForm("username")
@@ -71,7 +70,7 @@ func (au *AuthHandlers) login(c *gin.Context) {
 		return
 	}
 
-	ok, err := au.useCase.Login(c, user)
+	ok, err := au.UseCase.Login(c, user)
 	if err != nil || ok != true {
 		errorResponse(c, http.StatusUnauthorized, "Authentication failed")
 	} else {

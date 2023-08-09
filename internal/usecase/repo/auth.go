@@ -1,9 +1,9 @@
 package repo
 
 import (
+	"autoDiagnosticService/internal/entity"
+	"autoDiagnosticService/pkg/postgres"
 	"context"
-	"github.com/evrone/go-clean-template/internal/entity"
-	"github.com/evrone/go-clean-template/pkg/postgres"
 )
 
 type Auth struct {

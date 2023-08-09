@@ -45,7 +45,9 @@ type (
 	}
 
 	Detector struct {
-		URL string `env-required:"true" yaml:"host" env:"HOST"`
+		URL       string `env-required:"true" yaml:"host" env:"HOST"`
+		FormField string `env-required:"true" yaml:"form_field" env:"HOST"`
+		FormName  string `env-required:"true" yaml:"form_name" env:"HOST"`
 	}
 )
 

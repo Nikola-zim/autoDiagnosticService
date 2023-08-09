@@ -1,8 +1,8 @@
 package v1
 
 import (
+	"autoDiagnosticService/internal/entity"
 	"fmt"
-	"github.com/evrone/go-clean-template/internal/entity"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"image"
@@ -11,9 +11,8 @@ import (
 	"os"
 	"time"
 
+	"autoDiagnosticService/pkg/logger"
 	"github.com/disintegration/imaging"
-	"github.com/evrone/go-clean-template/internal/usecase"
-	"github.com/evrone/go-clean-template/pkg/logger"
 )
 
 const (
@@ -22,11 +21,11 @@ const (
 )
 
 type recognition struct {
-	useCase usecase.Recognition
+	useCase Recognition
 	l       logger.Interface
 }
 
-func newIconRecognitionRoutes(handler *gin.RouterGroup, t usecase.Recognition, l logger.Interface) {
+func newIconRecognitionRoutes(handler *gin.RouterGroup, t Recognition, l logger.Interface) {
 	r := &recognition{t, l}
 
 	h := handler.Group("/api")

@@ -1,8 +1,8 @@
 package usecase
 
 import (
+	"autoDiagnosticService/internal/entity"
 	"context"
-	"github.com/evrone/go-clean-template/internal/entity"
 )
 
 type RecognitionUseCase struct {

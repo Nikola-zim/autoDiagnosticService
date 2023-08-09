@@ -1,10 +1,10 @@
 package telegram
 
 import (
+	"autoDiagnosticService/internal/entity"
+	"autoDiagnosticService/internal/usecase"
 	"context"
 	"fmt"
-	"github.com/evrone/go-clean-template/internal/entity"
-	"github.com/evrone/go-clean-template/internal/usecase"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/nfnt/resize"
 	_ "github.com/nfnt/resize"

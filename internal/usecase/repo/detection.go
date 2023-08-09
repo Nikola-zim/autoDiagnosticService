@@ -1,10 +1,10 @@
 package repo
 
 import (
+	"autoDiagnosticService/internal/entity"
+	"autoDiagnosticService/pkg/postgres"
 	"context"
 	"fmt"
-	"github.com/evrone/go-clean-template/internal/entity"
-	"github.com/evrone/go-clean-template/pkg/postgres"
 	"github.com/jackc/pgx/v4"
 	"github.com/pkg/errors"
 	"strconv"

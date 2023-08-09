@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"github.com/evrone/go-clean-template/pkg/logger"
+	"autoDiagnosticService/pkg/logger"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"net/http"

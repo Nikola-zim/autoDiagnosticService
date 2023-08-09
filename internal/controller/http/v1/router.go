@@ -2,9 +2,9 @@
 package v1
 
 import (
-	"github.com/evrone/go-clean-template/internal/controller/http/middlewares"
-	"github.com/evrone/go-clean-template/internal/usecase"
-	"github.com/evrone/go-clean-template/pkg/logger"
+	"autoDiagnosticService/internal/controller/http/middlewares"
+	"autoDiagnosticService/internal/usecase"
+	"autoDiagnosticService/pkg/logger"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
