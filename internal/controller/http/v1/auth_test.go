@@ -21,7 +21,7 @@ const (
 
 var secret = []byte("secret")
 
-func TestLogin(t *testing.T) {
+func TestLoginWEB(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -87,6 +87,78 @@ func TestLogin(t *testing.T) {
 			c.Request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 			mockUseCase.EXPECT().Login(gomock.Any(), tc.User).Return(tc.MockUseCaseOK, tc.MockUseCaseErr).AnyTimes()
+			r.ServeHTTP(w, c.Request)
+
+			if w.Code != tc.ExpectStatus {
+				t.Errorf("expected status %d; got %d", tc.ExpectStatus, w.Code)
+			}
+		})
+	}
+}
+
+func TestAuthHandlers_register(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	gin.SetMode(gin.TestMode)
+
+	testCases := []struct {
+		Name           string
+		Username       string
+		Password       string
+		User           entity.User
+		MockUseCaseOK  bool
+		MockUseCaseErr error
+		ExpectStatus   int
+	}{
+		{
+			Name:           "Successful register",
+			Username:       defaultUsername,
+			Password:       defaultPassword,
+			User:           entity.User{Login: defaultUsername, Password: defaultPassword},
+			MockUseCaseErr: nil,
+			ExpectStatus:   http.StatusOK,
+		},
+		{
+			Name:           "Empty Parameters",
+			Username:       "  ",
+			Password:       "  ",
+			User:           entity.User{Login: "  ", Password: "  "},
+			MockUseCaseErr: nil,
+			ExpectStatus:   http.StatusBadRequest,
+		},
+		{
+			Name:           "Invalid Credentials",
+			Username:       "#@!$#",
+			Password:       "qwerqwerqwer",
+			User:           entity.User{Login: "#@!$#", Password: "qwerqwerqwer"},
+			MockUseCaseErr: nil,
+			ExpectStatus:   http.StatusBadRequest,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.Name, func(t *testing.T) {
+			loginURL := "/v1/auth/register"
+			w := httptest.NewRecorder()
+
+			c, r := gin.CreateTestContext(w)
+			mockUseCase := NewMockRecognition(ctrl)
+			au := &v1.AuthHandlers{
+				UseCase: mockUseCase,
+			}
+			sessionManager := sessions.Sessions("mysession", cookie.NewStore(secret))
+			r.Use(sessionManager)
+			r.POST(loginURL, au.Register)
+
+			data := url.Values{}
+			data.Add("username", tc.Username)
+			data.Add("password", tc.Password)
+			body := strings.NewReader(data.Encode())
+			c.Request, _ = http.NewRequest(http.MethodPost, loginURL, body)
+			c.Request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+			mockUseCase.EXPECT().AddUser(gomock.Any(), tc.User).Return(tc.MockUseCaseErr).AnyTimes()
 			r.ServeHTTP(w, c.Request)
 
 			if w.Code != tc.ExpectStatus {

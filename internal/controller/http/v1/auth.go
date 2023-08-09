@@ -6,6 +6,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"regexp"
 	"strings"
 )
 
@@ -27,7 +28,7 @@ func NewAuthHandlers(handler *gin.RouterGroup, useCase Recognition, l logger.Int
 	u := handler.Group("")
 	{
 		u.GET("/main_page", au.authPage)
-		u.POST("/register", au.register)
+		u.POST("/register", au.Register)
 		u.POST("/login", au.LoginWEB)
 		u.GET("/logout", au.logout)
 	}
@@ -40,7 +41,7 @@ func (au *AuthHandlers) authPage(c *gin.Context) {
 	})
 }
 
-func (au *AuthHandlers) register(c *gin.Context) {
+func (au *AuthHandlers) Register(c *gin.Context) {
 	var user entity.User
 	user.Login = c.PostForm("username")
 	user.Password = c.PostForm("password")
@@ -48,6 +49,10 @@ func (au *AuthHandlers) register(c *gin.Context) {
 	// Validate form input
 	if strings.Trim(user.Login, " ") == "" || strings.Trim(user.Password, " ") == "" {
 		errorResponse(c, http.StatusBadRequest, "Parameters can't be empty")
+		return
+	}
+	if !isValidUsername(user.Login) {
+		errorResponse(c, http.StatusBadRequest, "Invalid username format")
 		return
 	}
 
@@ -101,4 +106,9 @@ func (au *AuthHandlers) logout(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully logged out"})
+}
+
+func isValidUsername(username string) bool {
+	regex := regexp.MustCompile(`^[a-zA-Z0-9_]{4,16}$`)
+	return regex.MatchString(username)
 }
