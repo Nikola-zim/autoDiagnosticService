@@ -1,7 +1,8 @@
-package v1_test
+package tests_test
 
 import (
 	v1 "autoDiagnosticService/internal/controller/http/v1"
+	"autoDiagnosticService/internal/controller/http/v1/mocks"
 	"autoDiagnosticService/internal/entity"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -71,7 +72,7 @@ func TestLoginWEB(t *testing.T) {
 			w := httptest.NewRecorder()
 
 			c, r := gin.CreateTestContext(w)
-			mockUseCase := NewMockRecognition(ctrl)
+			mockUseCase := mocks.NewMockRecognition(ctrl)
 			au := &v1.AuthHandlers{
 				UseCase: mockUseCase,
 			}
@@ -143,7 +144,7 @@ func TestAuthHandlers_register(t *testing.T) {
 			w := httptest.NewRecorder()
 
 			c, r := gin.CreateTestContext(w)
-			mockUseCase := NewMockRecognition(ctrl)
+			mockUseCase := mocks.NewMockRecognition(ctrl)
 			au := &v1.AuthHandlers{
 				UseCase: mockUseCase,
 			}
