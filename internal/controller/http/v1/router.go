@@ -24,7 +24,7 @@ func NewRouter(au *middlewares.Auth) *Router {
 }
 
 // InitRoutes -.
-func (r *Router) InitRoutes(handler *gin.Engine, l logger.Interface, t usecase.Recognition) {
+func (r *Router) InitRoutes(handler *gin.Engine, l logger.Interface, t usecase.Recognition, storagePath string) {
 	// Options
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
@@ -45,7 +45,7 @@ func (r *Router) InitRoutes(handler *gin.Engine, l logger.Interface, t usecase.R
 		subGroup1URL := "/private"
 		private := router.Group(subGroup1URL)
 		private.Use(r.au.AuthRequired())
-		newIconRecognitionRoutes(private, t, l)
+		newIconRecognitionRoutes(private, t, l, storagePath)
 
 		subGroup2URL := "/auth"
 		auth := router.Group(subGroup2URL)

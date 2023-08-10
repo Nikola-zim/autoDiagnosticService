@@ -1,6 +1,7 @@
-package v1
+package tests_test
 
 import (
+	v1 "autoDiagnosticService/internal/controller/http/v1"
 	"autoDiagnosticService/internal/controller/http/v1/mocks"
 	"autoDiagnosticService/internal/entity"
 	"github.com/gin-contrib/sessions"
@@ -18,6 +19,8 @@ const (
 	defaultUsername = "username"
 	defaultPassword = "password"
 )
+
+var secret = []byte("secret")
 
 func TestLoginWEB(t *testing.T) {
 	ctrl := gomock.NewController(t)
@@ -66,15 +69,13 @@ func TestLoginWEB(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.Name, func(t *testing.T) {
 			loginURL := "/v1/auth/login"
-
 			w := httptest.NewRecorder()
-			c, r := gin.CreateTestContext(w)
 
+			c, r := gin.CreateTestContext(w)
 			mockUseCase := mocks.NewMockRecognition(ctrl)
-			au := &AuthHandlers{
+			au := &v1.AuthHandlers{
 				UseCase: mockUseCase,
 			}
-
 			sessionManager := sessions.Sessions("mysession", cookie.NewStore(secret))
 			r.Use(sessionManager)
 			r.POST(loginURL, au.LoginWEB)
@@ -144,7 +145,7 @@ func TestAuthHandlers_register(t *testing.T) {
 
 			c, r := gin.CreateTestContext(w)
 			mockUseCase := mocks.NewMockRecognition(ctrl)
-			au := &AuthHandlers{
+			au := &v1.AuthHandlers{
 				UseCase: mockUseCase,
 			}
 			sessionManager := sessions.Sessions("mysession", cookie.NewStore(secret))

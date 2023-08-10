@@ -68,7 +68,7 @@ func Run(cfg *config.Config) {
 	handler := gin.New()
 	au := middlewares.NewAuth(l)
 	router := v1.NewRouter(au)
-	router.InitRoutes(handler, l, detectionUseCase)
+	router.InitRoutes(handler, l, detectionUseCase, cfg.TG.ImagePath)
 	httpServer := httpserver.New(handler, telegramBot, httpserver.Port(cfg.HTTP.Port))
 
 	// Waiting signal

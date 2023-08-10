@@ -16,17 +16,18 @@ import (
 )
 
 const (
-	layout   = "2006_01_02"
-	filePath = "./internal/file_storage/images/"
+	layout = "2006_01_02"
+	//storagePath = "./internal/file_storage/images/"
 )
 
 type recognition struct {
-	useCase Recognition
-	l       logger.Interface
+	useCase     Recognition
+	l           logger.Interface
+	storagePath string
 }
 
-func newIconRecognitionRoutes(handler *gin.RouterGroup, t Recognition, l logger.Interface) {
-	r := &recognition{t, l}
+func newIconRecognitionRoutes(handler *gin.RouterGroup, t Recognition, l logger.Interface, storagePath string) {
+	r := &recognition{t, l, storagePath}
 
 	h := handler.Group("/api")
 	{
@@ -54,10 +55,10 @@ func (r *recognition) uploadImage(c *gin.Context) {
 
 	// сохраняем файл на сервере
 	date := time.Now().Format(layout)
-	filePathName := fmt.Sprintf(filePath+"%s"+"/%s", date, file.Filename)
+	filePathName := fmt.Sprintf("./"+r.storagePath+"%s"+"/%s", date, file.Filename)
 	// Создаем dir
-	if _, err := os.Stat(filePath + "/" + date); os.IsNotExist(err) {
-		os.MkdirAll(filePath+"/"+date, 0700) // Create your file
+	if _, err := os.Stat(r.storagePath + "/" + date); os.IsNotExist(err) {
+		os.MkdirAll(r.storagePath+"/"+date, 0700) // Create your file
 	}
 	err = c.SaveUploadedFile(file, filePathName)
 
@@ -95,7 +96,7 @@ func (r *recognition) uploadImage(c *gin.Context) {
 	}
 	err = r.useCase.AddRequest(c, newReq)
 	if err != nil {
-		errorResponse(c, http.StatusUnauthorized, fmt.Sprintf("%s", err))
+		errorResponse(c, http.StatusInternalServerError, fmt.Sprintf("%s", err))
 	} else {
 		c.JSON(http.StatusOK, gin.H{"message": "Image uploaded!"})
 	}

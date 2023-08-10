@@ -5,7 +5,7 @@ import (
 	"context"
 )
 
-//go:generate mockgen -source=interfaces.go -destination=./mocks_test.go -package=v1_test
+//go:generate mockgen -source=interfaces.go -destination=./mocks/auth.go -package=mocks
 
 type (
 	// Recognition -.
