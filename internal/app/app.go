@@ -4,6 +4,7 @@ package app
 import (
 	"autoDiagnosticService/internal/controller/http/middlewares"
 	"autoDiagnosticService/internal/entity"
+	"autoDiagnosticService/internal/file_storage"
 	"autoDiagnosticService/internal/usecase/repo"
 	"autoDiagnosticService/internal/usecase/worker"
 	"autoDiagnosticService/pkg/postgres"
@@ -44,8 +45,11 @@ func Run(cfg *config.Config) {
 		repo.NewAuth(pg),
 	)
 
+	// file_storage
+	fs := fileStorage.New(cfg.Storage.ImagePath)
+
 	// Detection Worker
-	detectionWorker := worker.NewDetectionWebAPI(detectionUseCase, newAnswer, cfg.Detector)
+	detectionWorker := worker.NewDetectionWebAPI(detectionUseCase, fs, newAnswer, cfg.Detector)
 	go func() {
 		err = detectionWorker.Run(context.Background())
 		if err != nil {
@@ -55,7 +59,7 @@ func Run(cfg *config.Config) {
 	//
 	classes := entity.NewClasses()
 	//telegram bot
-	telegramBot, err := telegram.New(cfg.TG.BotToken, detectionUseCase, classes, newAnswer)
+	telegramBot, err := telegram.New(cfg.TG.BotToken, cfg.TG.ImagePath, detectionUseCase, classes, newAnswer)
 	if err != nil {
 		l.Warn(fmt.Sprintf("app - Run - telegram.New: %w", err))
 	}

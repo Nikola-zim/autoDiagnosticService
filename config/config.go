@@ -15,6 +15,7 @@ type (
 		PG       `yaml:"postgres"`
 		TG       `yaml:"telegram"`
 		Detector `yaml:"detector"`
+		Storage  `yaml:"storage"`
 	}
 
 	// App -.
@@ -41,13 +42,18 @@ type (
 
 	// TG -.
 	TG struct {
-		BotToken string `env-required:"true" yaml:"bot_token" env:"TG_TOKEN"`
+		BotToken  string `env-required:"true" yaml:"bot_token" env:"TG_TOKEN"`
+		ImagePath string `env-required:"true" yaml:"image_path" env:"IMAGE_PATH"`
 	}
 
 	Detector struct {
 		URL       string `env-required:"true" yaml:"host" env:"HOST"`
 		FormField string `env-required:"true" yaml:"form_field" env:"HOST"`
 		FormName  string `env-required:"true" yaml:"form_name" env:"HOST"`
+	}
+
+	Storage struct {
+		ImagePath string `env-required:"true" yaml:"image_path" env:"IMAGE_PATH"`
 	}
 )
 

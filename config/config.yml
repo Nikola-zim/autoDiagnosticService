@@ -18,5 +18,9 @@ detector:
   form_field: 'image'
   form_name: 'accumulator.jpg'
 
+storage:
+  image_path: 'internal/file_storage/detected'
+
 telegram:
   bot_token: '6053825271:AAEANkoVpXg1cz5bCvDrm7iK0xiMDOqQHiY'
+  image_path: 'internal/file_storage/images/'

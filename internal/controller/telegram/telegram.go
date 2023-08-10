@@ -25,12 +25,12 @@ type Telegram struct {
 	useCase   usecase.Recognition
 	newAnswer chan bool
 	classes   *entity.Classes
+	filePath  string
 }
 
 const layout = "2006_01_02"
-const filePath = "pkg/file_storage/images/"
 
-func New(token string, useCase usecase.Recognition, classes *entity.Classes, newAnswer chan bool, opts ...Option) (*Telegram, error) {
+func New(token string, filePath string, useCase usecase.Recognition, classes *entity.Classes, newAnswer chan bool, opts ...Option) (*Telegram, error) {
 
 	botAPI, err := tgbotapi.NewBotAPI(token)
 
@@ -44,6 +44,7 @@ func New(token string, useCase usecase.Recognition, classes *entity.Classes, new
 		useCase:   useCase,
 		newAnswer: newAnswer,
 		classes:   classes,
+		filePath:  filePath,
 	}
 	// Custom options
 	for _, opt := range opts {
@@ -74,7 +75,7 @@ func (tg *Telegram) Start() {
 					}
 
 					// Загружаем изображение
-					imagePathName, err := downloadFile(file.Link(tg.BotAPI.Token), strconv.Itoa(update.Message.MessageID))
+					imagePathName, err := tg.downloadFile(file.Link(tg.BotAPI.Token), strconv.Itoa(update.Message.MessageID))
 					if err != nil {
 						log.Println(err)
 						continue
@@ -154,13 +155,13 @@ func (tg *Telegram) describe(descriptions string) string {
 }
 
 // Функция для загрузки файла с указанного URL
-func downloadFile(url string, messageID string) (string, error) {
+func (tg *Telegram) downloadFile(url string, messageID string) (string, error) {
 	date := time.Now().Format(layout)
 	fileName := date + "/to_detect" + messageID + ".jpg"
-	filePathAndName := fmt.Sprintf(filePath+"%s", fileName)
+	filePathAndName := fmt.Sprintf(tg.filePath+"%s", fileName)
 	// Создаем файл на сервере
-	if _, err := os.Stat(filePath + "/" + date); os.IsNotExist(err) {
-		os.MkdirAll(filePath+"/"+date, 0700) // Create your file
+	if _, err := os.Stat(tg.filePath + "/" + date); os.IsNotExist(err) {
+		os.MkdirAll(tg.filePath+"/"+date, 0700) // Create your file
 	}
 
 	// Save image

@@ -3,10 +3,10 @@ package worker
 import (
 	"autoDiagnosticService/config"
 	"autoDiagnosticService/internal/entity"
+	"autoDiagnosticService/internal/file_storage"
 	"autoDiagnosticService/internal/usecase"
 	"bytes"
 	"context"
-	b64 "encoding/base64"
 	"encoding/json"
 	"github.com/go-co-op/gocron"
 	"github.com/rs/zerolog/log"
@@ -15,32 +15,31 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 )
 
 // DetectionWebAPI -.
 type DetectionWebAPI struct {
-	scheduler *gocron.Scheduler
-	useCase   usecase.Recognition
-	newAnswer chan bool
-	config    config.Detector
+	scheduler   *gocron.Scheduler
+	useCase     usecase.Recognition
+	fileStorage *fileStorage.FileStorage
+	newAnswer   chan bool
+	config      config.Detector
 }
 
 const (
-	defaultLocation          = "Europe/Moscow"
-	defaultDetectedImagePath = "internal/file_storage/detected"
-	layout                   = "2006_01_02"
+	defaultLocation = "Europe/Moscow"
 )
 
 // NewDetectionWebAPI -.
-func NewDetectionWebAPI(useCase usecase.Recognition, newAnswer chan bool, config config.Detector) *DetectionWebAPI {
+func NewDetectionWebAPI(useCase usecase.Recognition, fileStorage *fileStorage.FileStorage, newAnswer chan bool, config config.Detector) *DetectionWebAPI {
 	location, _ := time.LoadLocation(defaultLocation)
 	return &DetectionWebAPI{
-		useCase:   useCase,
-		scheduler: gocron.NewScheduler(location),
-		newAnswer: newAnswer,
-		config:    config,
+		useCase:     useCase,
+		fileStorage: fileStorage,
+		scheduler:   gocron.NewScheduler(location),
+		newAnswer:   newAnswer,
+		config:      config,
 	}
 }
 
@@ -127,7 +126,7 @@ func (dw *DetectionWebAPI) serverRecognitionQuery(ctx context.Context, tasks []e
 		}
 
 		// Save image
-		newPath, err := imageSave(t.Image, task.ImagePathName)
+		newPath, err := dw.fileStorage.ImageSave(t.Image, task.ImagePathName)
 		if err != nil {
 			return err
 		}
@@ -140,35 +139,4 @@ func (dw *DetectionWebAPI) serverRecognitionQuery(ctx context.Context, tasks []e
 
 	}
 	return nil
-}
-
-func imageSave(img string, pathName string) (string, error) {
-	date := time.Now().Format(layout)
-	decodedBytes, err := b64.StdEncoding.DecodeString(img)
-
-	if err != nil {
-		return "", err
-	}
-
-	// Создаем файл на сервере
-	currentPath := defaultDetectedImagePath + "/" + date
-	if _, err := os.Stat(currentPath); os.IsNotExist(err) {
-		os.MkdirAll(currentPath, 0700) // Create your file
-	}
-	// Save image
-	ss := strings.Split(pathName, "/")
-	s := ss[len(ss)-1]
-	filePathAndName := currentPath + "/" + s
-	out, err := os.Create(filePathAndName)
-	if err != nil {
-		return "", err
-	}
-	defer out.Close()
-	// Сохраняем декодированные байты в файл
-	err = os.WriteFile(filePathAndName, decodedBytes, 0644)
-	if err != nil {
-		log.Err(err).Msgf("ioutil.WriteFile fails on: %s", filePathAndName)
-	}
-
-	return filePathAndName, nil
 }
