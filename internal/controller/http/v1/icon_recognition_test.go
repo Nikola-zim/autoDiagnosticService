@@ -99,7 +99,7 @@ func Test_recognition_uploadImage(t *testing.T) {
 				storagePath: storagePath,
 			}
 			// For passing static check
-			fmt.Println(storagePath)
+			fmt.Println(r.storagePath)
 			// Gin context
 			w := httptest.NewRecorder()
 			c, handler := gin.CreateTestContext(w)
@@ -221,7 +221,7 @@ func Test_recognition_recognizedImages(t *testing.T) {
 				storagePath: storagePath,
 			}
 			// For passing static check
-			fmt.Println(storagePath)
+			fmt.Println(r.storagePath)
 			// Gin context
 			w := httptest.NewRecorder()
 			c, handler := gin.CreateTestContext(w)
@@ -259,8 +259,6 @@ func Test_recognition_addPoints(t *testing.T) {
 		l           logger.Interface
 		storagePath string
 	}
-	// For passing static check
-	fmt.Println(storagePath)
 	mockRecognition := mocks.NewMockRecognition(ctrl)
 	mockLogger := logger.New("debug")
 
@@ -327,7 +325,8 @@ func Test_recognition_addPoints(t *testing.T) {
 				l:           tt.fields.l,
 				storagePath: storagePath,
 			}
-
+			// For passing static check
+			fmt.Println(r.storagePath)
 			// Gin context
 			w := httptest.NewRecorder()
 			c, handler := gin.CreateTestContext(w)
