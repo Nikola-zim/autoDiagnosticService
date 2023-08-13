@@ -6,7 +6,6 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"image"
-	"log"
 	"net/http"
 	"os"
 	"time"
@@ -108,7 +107,7 @@ func (r *recognition) recognizedImages(c *gin.Context) {
 	user := session.Get(userKey)
 	results, err := r.useCase.GetRecognitionAnswersWEB(c, fmt.Sprintf("%v", user))
 	if err != nil {
-		log.Println(err)
+		errorResponse(c, http.StatusInternalServerError, fmt.Sprintf("%s", err))
 	}
 
 	images := make([]string, 0, len(results))
@@ -127,13 +126,13 @@ func (r *recognition) addPoints(c *gin.Context) {
 	user := session.Get(userKey)
 	var balanceAdd entity.Balance
 	err := c.ShouldBindJSON(&balanceAdd)
-	if err != nil {
+	if err != nil || balanceAdd.Points <= 0 {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
 	err = r.useCase.AddPoints(c, balanceAdd.Points, fmt.Sprintf("%v", user))
 	if err != nil {
-		errorResponse(c, http.StatusBadRequest, fmt.Sprintf("%s", err))
+		errorResponse(c, http.StatusInternalServerError, fmt.Sprintf("%s", err))
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Balance is replenished!"})
