@@ -47,12 +47,12 @@ func (dw *DetectionWebAPI) Run(ctx context.Context) error {
 	recognitionTask := func(ctx context.Context) error {
 		tasks, err := dw.useCase.GetRecognitionTasks(ctx)
 		if err != nil {
-			log.Info().Msgf("no tasks or error", err)
+			log.Info().Msgf("no tasks or error: %s", err)
 			return err
 		}
 		err = dw.serverRecognitionQuery(ctx, tasks)
 		if err != nil {
-			log.Info().Msgf("failed to get results from recognition server", err)
+			log.Info().Msgf("failed to get results from recognition server: %s", err)
 			return err
 		}
 		// Send answers
@@ -75,7 +75,7 @@ func (dw *DetectionWebAPI) serverRecognitionQuery(ctx context.Context, tasks []e
 		// Открываем файл с изображением
 		file, err := os.Open(task.ImagePathName)
 		if err != nil {
-			log.Info().Msgf("with %s%s ", task.ImagePathName, err)
+			log.Info().Msgf("run with error; image: %s; error: %s ", task.ImagePathName, err)
 			continue
 		}
 		defer file.Close()

@@ -61,7 +61,7 @@ func Run(cfg *config.Config) {
 	//telegram bot
 	telegramBot, err := telegram.New(cfg.TG.BotToken, cfg.TG.ImagePath, detectionUseCase, classes, newAnswer)
 	if err != nil {
-		l.Warn(fmt.Sprintf("app - Run - telegram.New: %w", err))
+		l.Warn(fmt.Sprintf("app - Run - telegram.New: %s", err))
 	}
 
 	// HTTP Server
