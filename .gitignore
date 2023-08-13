@@ -21,3 +21,6 @@ bin/
 
 # Dependency directories (remove the comment below to include it)
 vendor/
+
+internal/file_storage/detected
+internal/file_storage/images

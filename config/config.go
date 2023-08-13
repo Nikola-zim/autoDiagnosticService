@@ -9,11 +9,13 @@ import (
 type (
 	// Config -.
 	Config struct {
-		App  `yaml:"app"`
-		HTTP `yaml:"http"`
-		Log  `yaml:"logger"`
-		PG   `yaml:"postgres"`
-		//RMQ  `yaml:"rabbitmq"`
+		App      `yaml:"app"`
+		HTTP     `yaml:"http"`
+		Log      `yaml:"logger"`
+		PG       `yaml:"postgres"`
+		TG       `yaml:"telegram"`
+		Detector `yaml:"detector"`
+		Storage  `yaml:"storage"`
 	}
 
 	// App -.
@@ -38,12 +40,21 @@ type (
 		URL     string `env-required:"true" yaml:"pg_url"   env:"PG_URL"`
 	}
 
-	//// RMQ -.
-	//RMQ struct {
-	//	ServerExchange string `env-required:"true" yaml:"rpc_server_exchange" env:"RMQ_RPC_SERVER"`
-	//	ClientExchange string `env-required:"true" yaml:"rpc_client_exchange" env:"RMQ_RPC_CLIENT"`
-	//	URL            string `env-required:"true"                            env:"RMQ_URL"`
-	//}
+	// TG -.
+	TG struct {
+		BotToken  string `env-required:"true" yaml:"bot_token" env:"TG_TOKEN"`
+		ImagePath string `env-required:"true" yaml:"image_path" env:"IMAGE_PATH"`
+	}
+
+	Detector struct {
+		URL       string `env-required:"true" yaml:"host" env:"HOST"`
+		FormField string `env-required:"true" yaml:"form_field" env:"HOST"`
+		FormName  string `env-required:"true" yaml:"form_name" env:"HOST"`
+	}
+
+	Storage struct {
+		ImagePath string `env-required:"true" yaml:"image_path" env:"IMAGE_PATH"`
+	}
 )
 
 // NewConfig returns app config.

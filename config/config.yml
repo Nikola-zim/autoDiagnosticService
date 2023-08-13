@@ -13,6 +13,14 @@ postgres:
   pg_url: postgresql://user:pass@localhost:5432/postgres
   pool_max: 2
 
-rabbitmq:
-  rpc_server_exchange: 'rpc_server'
-  rpc_client_exchange: 'rpc_client'
+detector:
+  host: 'http://192.168.1.9:5000/v1/object-detection/yolov5'
+  form_field: 'image'
+  form_name: 'accumulator.jpg'
+
+storage:
+  image_path: 'internal/file_storage/detected'
+
+telegram:
+  bot_token: '6053825271:AAEANkoVpXg1cz5bCvDrm7iK0xiMDOqQHiY'
+  image_path: 'internal/file_storage/images/'

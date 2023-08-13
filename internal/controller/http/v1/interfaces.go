@@ -1,12 +1,11 @@
-// Package usecase implements application business logic. Each logic group in own file.
-package usecase
+package v1
 
 import (
 	"autoDiagnosticService/internal/entity"
 	"context"
 )
 
-//go:generate mockgen -source=interfaces.go -destination=./mocks_test.go -package=usecase_test
+//go:generate mockgen -source=interfaces.go -destination=./mocks/auth.go -package=mocks
 
 type (
 	// Recognition -.
