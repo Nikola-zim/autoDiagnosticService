@@ -11,7 +11,6 @@ import (
 	"github.com/go-co-op/gocron"
 	"github.com/rs/zerolog/log"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -90,7 +89,9 @@ func (dw *DetectionWebAPI) serverRecognitionQuery(ctx context.Context, tasks []e
 			return err
 		}
 		_, err = io.Copy(part, file)
-
+		if err != nil {
+			return err
+		}
 		// Закрываем форму
 		writer.Close()
 
@@ -112,7 +113,7 @@ func (dw *DetectionWebAPI) serverRecognitionQuery(ctx context.Context, tasks []e
 		defer resp.Body.Close()
 
 		// Читаем ответ
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 
 		if err != nil {
 			panic(err)

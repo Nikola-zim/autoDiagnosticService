@@ -76,7 +76,7 @@ func (au *AuthHandlers) LoginWEB(c *gin.Context) {
 	}
 
 	ok, err := au.UseCase.Login(c, user)
-	if err != nil || ok != true {
+	if err != nil || !ok {
 		errorResponse(c, http.StatusUnauthorized, "Authentication failed")
 	} else {
 		//Устанавливаем куку

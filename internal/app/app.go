@@ -21,7 +21,6 @@ import (
 	"autoDiagnosticService/internal/usecase"
 	"autoDiagnosticService/pkg/httpserver"
 	"autoDiagnosticService/pkg/logger"
-	_ "autoDiagnosticService/pkg/postgres"
 
 	"autoDiagnosticService/internal/controller/telegram"
 )

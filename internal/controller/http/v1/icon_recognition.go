@@ -16,7 +16,6 @@ import (
 
 const (
 	layout = "2006_01_02"
-	//storagePath = "./internal/file_storage/images/"
 )
 
 type recognition struct {
@@ -38,10 +37,6 @@ func newIconRecognitionRoutes(handler *gin.RouterGroup, t Recognition, l logger.
 	{
 		b.POST("/add", r.addPoints)
 	}
-}
-
-type doRecognitionResponse struct {
-	recognitionResult []string
 }
 
 func (r *recognition) uploadImage(c *gin.Context) {

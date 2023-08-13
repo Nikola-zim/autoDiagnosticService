@@ -198,7 +198,6 @@ func (ir *RecognitionRepo) GetRecognitionAnswersWEB(ctx context.Context, userNam
 	if err != nil {
 		return nil, err
 	}
-	valueStrings := make([]string, 0, ir.batchSize)
 	for rows.Next() {
 		iter := 1
 		var result entity.Request
@@ -207,7 +206,6 @@ func (ir *RecognitionRepo) GetRecognitionAnswersWEB(ctx context.Context, userNam
 			return nil, err
 		}
 		results = append(results, result)
-		valueStrings = append(valueStrings, fmt.Sprintf("$%d", iter))
 		iter++
 		allID = append(allID, strconv.FormatInt(result.ID, 10))
 	}

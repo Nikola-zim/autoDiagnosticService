@@ -7,10 +7,8 @@ import (
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/nfnt/resize"
-	_ "github.com/nfnt/resize"
 	"image"
 	"image/jpeg"
-	_ "image/jpeg"
 	"log"
 	"net/http"
 	"os"
@@ -121,7 +119,9 @@ func (tg *Telegram) Start() {
 				}
 
 				_, err = tg.BotAPI.Send(tgbotapi.NewPhoto(result.ChatID, photoFileBytes))
-
+				if err != nil {
+					log.Println(err)
+				}
 				// Send result text
 				description := tg.describe(result.Description)
 				msg := tgbotapi.NewMessage(result.ChatID, description)
@@ -179,6 +179,9 @@ func (tg *Telegram) downloadFile(url string, messageID string) (string, error) {
 	defer resp.Body.Close()
 
 	receivedImage, _, err := image.Decode(resp.Body)
+	if err != nil {
+		log.Println(err)
+	}
 	// Resize to 640x640
 	newImage := resize.Resize(640, 640, receivedImage, resize.Lanczos3)
 	// Save image
